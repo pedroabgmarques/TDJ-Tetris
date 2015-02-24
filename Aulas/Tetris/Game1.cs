@@ -28,6 +28,7 @@ namespace Tetris
         float lastAutomaticMove = 0f;
         float lastHumanMove = 0f;
         KeyboardState teclado;
+        bool spacePressed;
 
         public Game1()
             : base()
@@ -52,6 +53,7 @@ namespace Tetris
             // TODO: Add your initialization logic here
             posicaoBox = new Vector2(0, 0);
             teclado = new KeyboardState();
+            spacePressed = false;
 
             base.Initialize();
         }
@@ -100,26 +102,34 @@ namespace Tetris
             if (lastHumanMove >= 1/20f)
             {
                 lastHumanMove = 0;
-                if (teclado.IsKeyDown(Keys.Left) && pX > 0)
+                //Esquerda
+                if (teclado.IsKeyDown(Keys.Left) && pX > 0 && canGoLeft())
                 {
-                    if (canGoLeft())
-                    {
-                        pX--;
-                    }
+                   pX--;
                 }
-                if (teclado.IsKeyDown(Keys.Right) && pX < 7)
+                //Direita
+                if (teclado.IsKeyDown(Keys.Right) && pX < 10 - piece.GetLength(0) && canGoRight())
                 {
-                    if (canGoRight())
-                    {
-                        pX++; 
-                    }
+                    pX++; 
                 }
-                if (teclado.IsKeyDown(Keys.Down))
+                //Baixo
+                if (teclado.IsKeyDown(Keys.Down) && canGoDown())
                 {
-                    if (canGoDown())
+                    pY++;
+                }
+                if (teclado.IsKeyUp(Keys.Space))
+                {
+                    spacePressed = false;
+                }
+                //Mandar peça diretamente para baixo
+                if (!spacePressed && teclado.IsKeyDown(Keys.Space))
+                {
+                    while (canGoDown())
                     {
                         pY++;
                     }
+                    newPiece();
+                    spacePressed = true;
                 }
             }
             
@@ -130,15 +140,21 @@ namespace Tetris
                     pY++;
                     lastAutomaticMove = 0;
                 }
-                else
-                {
-                    freeze();
-                    pX = 4;
-                    pY = 0;
-                }
+                else newPiece();
+                
             }
 
             base.Update(gameTime);
+        }
+
+        /// <summary>
+        /// Gera uma nova peça
+        /// </summary>
+        private void newPiece()
+        {
+            freeze();
+            pX = 4;
+            pY = 0;
         }
 
         /// <summary>
@@ -158,7 +174,7 @@ namespace Tetris
                 {
                     if (board[y, x] != 0)
                     {
-                        spriteBatch.Draw(box, new Vector2(x * 30, (y-2) * 30), Color.White);
+                        spriteBatch.Draw(box, new Vector2(x * 30, (y-2) * 30), Color.Orange);
                     }
                     if (y >= pY && x >= pX 
                         && y < pY + piece.GetLength(0)
