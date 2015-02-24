@@ -28,7 +28,8 @@ namespace Tetris
         float lastAutomaticMove = 0f;
         float lastHumanMove = 0f;
         KeyboardState teclado;
-        bool spacePressed;
+        bool spacePressed, controlPressed;
+        Color[] colors = { Color.Wheat, Color.YellowGreen, Color.DarkBlue, Color.Pink, Color.Sienna, Color.LimeGreen, Color.Orchid };
 
         public Game1()
             : base()
@@ -54,6 +55,7 @@ namespace Tetris
             posicaoBox = new Vector2(0, 0);
             teclado = new KeyboardState();
             spacePressed = false;
+            controlPressed = false;
 
             piece = new Piece();
 
@@ -131,6 +133,16 @@ namespace Tetris
                     newPiece();
                     spacePressed = true;
                 }
+                //rodar a peça
+                if (!controlPressed && teclado.IsKeyDown(Keys.LeftControl))
+                {
+                    piece.rotate();
+                    controlPressed = true;
+                }
+                if (teclado.IsKeyUp(Keys.LeftControl))
+                {
+                    controlPressed = false;
+                }
             }
             
             //Atualizar contador da queda de peças
@@ -144,6 +156,8 @@ namespace Tetris
                 
             }
 
+            destruirLinha();
+
             base.Update(gameTime);
         }
 
@@ -154,7 +168,7 @@ namespace Tetris
         {
             freeze();
             piece = new Piece();
-            pX = 4;
+            pX = (10 - piece.Width) / 2;
             pY = 0;
         }
 
@@ -175,14 +189,14 @@ namespace Tetris
                 {
                     if (board[y, x] != 0)
                     {
-                        spriteBatch.Draw(box, new Vector2(x * 30, (y-2) * 30), Color.Orange);
+                        spriteBatch.Draw(box, new Vector2(x * 30, (y - 2) * 30), Color.Orange);
                     }
                     if (y >= pY && x >= pX 
                         && y < pY + piece.Height
                         && x < pX + piece.Width
                         && piece.getBlock(y-pY, x-pX) != 0)
                     {
-                        spriteBatch.Draw(box, new Vector2(x * 30, (y-2) * 30), Color.White);
+                        spriteBatch.Draw(box, new Vector2(x * 30, (y - 2) * 30), colors[piece.getBlock(y - pY, x - pX)-1]);
                     }
                 }
             }
@@ -255,6 +269,42 @@ namespace Tetris
                     if (piece.getBlock(y, x) != 0)
                     {
                         board[pY + y, pX + x] = piece.getBlock(y, x);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Verifica todas as linhas e destroi as linhas que estiverem cheias
+        /// </summary>
+        private void destruirLinha()
+        {
+            bool linhaCheia;
+            for (int y = 0; y < board.GetLength(0); y++)
+            {
+                linhaCheia = true;
+                for (int x = 0; x < board.GetLength(1); x++)
+                {
+                    if (board[y, x] == 0)
+                    {
+                        linhaCheia = false;
+                    }
+                }
+                if (linhaCheia)
+                {
+                    for (int x = 0; x < board.GetLength(1); x++)
+                    {
+                        board[y, x] = 0;
+                    }
+                    //Puxar todas as linhas que estão acima para baixo
+                    for (int z = y; z >= 0; z--)
+                    {
+                        for (int x = 0; x < board.GetLength(1); x++)
+                        {
+                            if(z+1 < 22) board[z + 1, x] = board[z, x];
+                            //board[z, x] = 0;
+                        }
+                        
                     }
                 }
             }
