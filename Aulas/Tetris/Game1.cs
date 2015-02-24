@@ -23,7 +23,7 @@ namespace Tetris
         Texture2D box;
         Vector2 posicaoBox;
         byte[,] board = new byte[22, 10];
-        byte[,] piece = { { 0, 1, 0 }, { 1, 1, 1 } };
+        Piece piece;
         int pX = 4, pY = 2;
         float lastAutomaticMove = 0f;
         float lastHumanMove = 0f;
@@ -55,6 +55,8 @@ namespace Tetris
             teclado = new KeyboardState();
             spacePressed = false;
 
+            piece = new Piece();
+
             base.Initialize();
         }
 
@@ -69,8 +71,6 @@ namespace Tetris
 
             // TODO: use this.Content to load your game content here
             box = Content.Load<Texture2D>("sprites/box");
-
-            
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Tetris
                    pX--;
                 }
                 //Direita
-                if (teclado.IsKeyDown(Keys.Right) && pX < 10 - piece.GetLength(0) && canGoRight())
+                if (teclado.IsKeyDown(Keys.Right) && pX < 10 - piece.Width && canGoRight())
                 {
                     pX++; 
                 }
@@ -153,6 +153,7 @@ namespace Tetris
         private void newPiece()
         {
             freeze();
+            piece = new Piece();
             pX = 4;
             pY = 0;
         }
@@ -177,9 +178,9 @@ namespace Tetris
                         spriteBatch.Draw(box, new Vector2(x * 30, (y-2) * 30), Color.Orange);
                     }
                     if (y >= pY && x >= pX 
-                        && y < pY + piece.GetLength(0)
-                        && x < pX + piece.GetLength(1)
-                        && piece[y-pY, x-pX] != 0)
+                        && y < pY + piece.Height
+                        && x < pX + piece.Width
+                        && piece.getBlock(y-pY, x-pX) != 0)
                     {
                         spriteBatch.Draw(box, new Vector2(x * 30, (y-2) * 30), Color.White);
                     }
@@ -198,7 +199,7 @@ namespace Tetris
         /// <returns>Bool</returns>
         private bool canGoDown()
         {
-            if (pY + piece.GetLength(0) >=22)
+            if (pY + piece.Height >=22)
             {
                 return false;
             }
@@ -224,16 +225,16 @@ namespace Tetris
         /// <returns>bool</returns>
         private bool canGoRight()
         {
-            if (pX + piece.GetLength(1) == 10) return false;
+            if (pX + piece.Width == 10) return false;
             return canGo(pX + 1, pY);
         }
 
         private bool canGo(int dX, int dY){
-            for (int x = 0; x < piece.GetLength(1); x++)
+            for (int x = 0; x < piece.Width; x++)
             {
-                for (int y = 0; y < piece.GetLength(0); y++)
+                for (int y = 0; y < piece.Height; y++)
                 {
-                    if (piece[y, x] != 0 && board[dY + y, dX + x] != 0)
+                    if (piece.getBlock(y, x) != 0 && board[dY + y, dX + x] != 0)
                     {
                         return false;
                     }
@@ -247,13 +248,13 @@ namespace Tetris
         /// </summary>
         private void freeze()
         {
-            for (int x = 0; x < piece.GetLength(1); x++)
+            for (int x = 0; x < piece.Width; x++)
             {
-                for (int y = 0; y < piece.GetLength(0); y++)
+                for (int y = 0; y < piece.Height; y++)
                 {
-                    if (piece[y, x] != 0)
+                    if (piece.getBlock(y, x) != 0)
                     {
-                        board[pY + y, pX + x] = piece[y, x];
+                        board[pY + y, pX + x] = piece.getBlock(y, x);
                     }
                 }
             }
