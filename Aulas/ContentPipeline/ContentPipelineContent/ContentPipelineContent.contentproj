@@ -131,6 +131,39 @@
       <ProcessorParameters_GenerateMipmaps>True</ProcessorParameters_GenerateMipmaps>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SkyBox.fx">
+      <Name>SkyBox</Name>
+      <Importer>EffectImporter</Importer>
+      <Processor>MGEffectProcessor</Processor>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="deserto.dds">
+      <Name>deserto</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MY_PALM.fbx">
+      <Name>MY_PALM</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="sand.jpg">
+      <Name>sand</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <ProcessorParameters_GenerateMipmaps>True</ProcessorParameters_GenerateMipmaps>
+      <ProcessorParameters_ResizeToPowerOfTwo>True</ProcessorParameters_ResizeToPowerOfTwo>
+    </Compile>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!--
       To modify your build process, add your task inside one of the targets below and uncomment it. 
